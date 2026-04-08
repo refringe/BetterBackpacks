@@ -29,3 +29,7 @@ To build the project locally:
 1. Clone the repository.
 2. Run `.\build.ps1` in the project root.
 3. The distributable zip will be created at the project root.
+
+## Acknowledgements
+
+Thanks to [Josh Mate](https://forge.sp-tarkov.com/user/21711/josh-mate) for the original mod that inspired this project.
