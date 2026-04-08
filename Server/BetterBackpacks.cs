@@ -55,7 +55,9 @@ public class BetterBackpacksPlugin(
         var items = databaseService.GetItems();
         var configuredCount = 0;
         var dynamicCount = 0;
-        var increasePercent = configService.Config.UnconfiguredIncreasePercent;
+        var config = configService.Config;
+        var increasePercent = config.UnconfiguredIncreasePercent;
+        var debug = config.Debug;
 
         foreach (var (id, item) in items)
         {
@@ -71,17 +73,36 @@ public class BetterBackpacksPlugin(
 
             var templateId = id.ToString();
 
-            if (configService.Config.Backpacks.TryGetValue(templateId, out var backpackConfig))
+            if (config.Backpacks.TryGetValue(templateId, out var backpackConfig))
             {
                 if (ApplyConfiguredBackpack(id, item, backpackConfig))
                 {
+                    if (debug)
+                    {
+                        var grids = string.Join(", ", backpackConfig.Grids.Select(g => $"{g.CellsH}x{g.CellsV}"));
+                        logger.Info($"[BetterBackpacks] {item.Name} ({templateId}): configured [{grids}]");
+                    }
                     configuredCount++;
                 }
             }
             else if (increasePercent > 0)
             {
+                var before = debug
+                    ? item.Properties.Grids.Select(g => $"{g.Properties?.CellsH}x{g.Properties?.CellsV}").ToList()
+                    : null;
+
                 if (ApplyDynamicIncrease(item, increasePercent))
                 {
+                    if (debug)
+                    {
+                        var after = string.Join(
+                            ", ",
+                            item.Properties.Grids.Select(g => $"{g.Properties?.CellsH}x{g.Properties?.CellsV}")
+                        );
+                        logger.Info(
+                            $"[BetterBackpacks] {item.Name} ({templateId}): dynamic +{increasePercent}% [{string.Join(", ", before!)}] -> [{after}]"
+                        );
+                    }
                     dynamicCount++;
                 }
             }

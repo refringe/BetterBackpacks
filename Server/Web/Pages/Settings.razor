@@ -4,6 +4,13 @@
 @inject IDialogService DialogService
 
 <MudContainer MaxWidth="MaxWidth.Medium">
+    <MudSwitch T="bool"
+               Value="Config.Debug"
+               ValueChanged="v => Config.Debug = v"
+               Color="Color.Primary"
+               Label="Debug Logging"
+               Class="mb-4" />
+
     <MudExpansionPanels MultiExpansion="true">
         <MudExpansionPanel Text="Unconfigured Backpacks" Expanded="true">
             <MudStack Spacing="1" Class="pa-2">

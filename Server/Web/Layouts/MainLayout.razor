@@ -62,6 +62,7 @@
         if (result == true)
         {
             var defaults = ModConfig.CreateDefault();
+            ConfigService.Config.Debug = defaults.Debug;
             ConfigService.Config.UnconfiguredIncreasePercent = defaults.UnconfiguredIncreasePercent;
             ConfigService.Config.Backpacks = defaults.Backpacks;
             Snackbar.Add("All values reset to defaults. Click Save to apply.", Severity.Info);
