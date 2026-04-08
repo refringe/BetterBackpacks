@@ -8,19 +8,52 @@
     <Version>1.0.0</Version>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+    <DebugType>none</DebugType>
+
+    <!-- Zip packaging properties -->
+    <ZipOutputPath>$(OutputPath)dist\</ZipOutputPath>
+    <ModFolder>Refringe-BetterBackpacks</ModFolder>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="inspect.cs" />
   </ItemGroup>
 
+  <!-- Exclude config.json from build output (packaged separately by PackageZip) -->
+  <ItemGroup>
+    <Content Remove="config.json" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="SPTarkov.Common" Version="4.0.0" />
     <PackageReference Include="SPTarkov.DI" Version="4.0.0" />
     <PackageReference Include="SPTarkov.Server.Core" Version="4.0.0" />
+    <PackageReference Include="SPTarkov.Server.Web" Version="4.0.0" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\..\..\..\SPT\user\mods\BetterBackpacks\$(TargetFileName)&quot;" />
+  </Target>
+
+  <!-- Package distributable zip after build -->
+  <Target Name="PackageZip" AfterTargets="Build">
+    <PropertyGroup>
+      <StagingPath>$(ZipOutputPath)_zip\SPT\user\mods\$(ModFolder)\</StagingPath>
+    </PropertyGroup>
+    <RemoveDir Directories="$(ZipOutputPath)_zip" />
+    <MakeDir Directories="$(StagingPath)" />
+    <ItemGroup>
+      <ModDlls Include="$(OutputPath)BetterBackpacks.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ModDlls)" DestinationFolder="$(StagingPath)" />
+    <Copy SourceFiles="config.json" DestinationFolder="$(StagingPath)" />
+    <ItemGroup>
+      <WebAssets Include="wwwroot\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(StagingPath)wwwroot\%(RecursiveDir)" />
+    <ZipDirectory SourceDirectory="$(ZipOutputPath)_zip" DestinationFile="$(ZipOutputPath)$(ModFolder).zip" Overwrite="true" />
+    <RemoveDir Directories="$(ZipOutputPath)_zip" />
   </Target>
 </Project>

@@ -1,0 +1,144 @@
+@page "/better-backpacks"
+@layout BetterBackpacks.Web.Layouts.MainLayout
+@inject ConfigService ConfigService
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <MudSwitch T="bool"
+               Value="Config.Enabled"
+               ValueChanged="v => Config.Enabled = v"
+               Color="Color.Primary"
+               Label="Enabled"
+               Class="mb-4" />
+
+    <MudExpansionPanels MultiExpansion="true">
+        @foreach (var (tierKey, tierLabel) in BackpackCatalog.Tiers)
+        {
+            <MudExpansionPanel Text="@tierLabel">
+                <MudExpansionPanels MultiExpansion="true">
+                    @foreach (var (templateId, entry) in BackpackCatalog.All.Where(kv => kv.Value.Tier == tierKey))
+                    {
+                        if (Config.Backpacks.TryGetValue(templateId, out var backpackConfig))
+                        {
+                            var bpId = templateId;
+                            var bpConfig = backpackConfig;
+                            var totalCells = bpConfig.Grids.Sum(g => g.CellsH * g.CellsV);
+
+                            <MudExpansionPanel Text="@($"{entry.Name} — {totalCells} cells")">
+                                @for (var i = 0; i < bpConfig.Grids.Count; i++)
+                                {
+                                    var grid = bpConfig.Grids[i];
+                                    var gridIndex = i;
+
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                        <div style="display: flex; align-items: center; gap: 8px; flex: 0 0 auto;">
+                                            <MudText Typo="Typo.body2" Style="white-space: nowrap;">
+                                                Grid @(gridIndex + 1)
+                                            </MudText>
+                                            <div style="width: 90px;">
+                                                <MudNumericField T="int"
+                                                                 Value="grid.CellsH"
+                                                                 ValueChanged="v => grid.CellsH = v"
+                                                                 Label="Width"
+                                                                 Min="1"
+                                                                 Max="6"
+                                                                 Immediate="true"
+                                                                 Variant="Variant.Outlined"
+                                                                 Margin="Margin.Dense" />
+                                            </div>
+                                            <div style="width: 90px;">
+                                                <MudNumericField T="int"
+                                                                 Value="grid.CellsV"
+                                                                 ValueChanged="v => grid.CellsV = v"
+                                                                 Label="Height"
+                                                                 Min="1"
+                                                                 Max="20"
+                                                                 Immediate="true"
+                                                                 Variant="Variant.Outlined"
+                                                                 Margin="Margin.Dense" />
+                                            </div>
+                                            <MudText Typo="Typo.body2" Style="white-space: nowrap;">
+                                                = @(grid.CellsH * grid.CellsV) cells
+                                            </MudText>
+                                        </div>
+                                        <div style="flex: 1 1 auto;"></div>
+                                        <MudSwitch T="bool"
+                                                   Value="grid.RemoveFilters"
+                                                   ValueChanged="v => grid.RemoveFilters = v"
+                                                   Color="Color.Primary"
+                                                   Label="Remove Filters" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                                       Color="Color.Error"
+                                                       OnClick="() => ConfirmRemoveGrid(bpConfig, gridIndex)"
+                                                       Disabled="bpConfig.Grids.Count <= 1" />
+                                    </div>
+                                }
+                                <MudStack Row="true" Class="mt-2">
+                                    <MudButton Variant="Variant.Outlined"
+                                               Color="Color.Primary"
+                                               OnClick="() => AddGrid(bpConfig)"
+                                               StartIcon="@Icons.Material.Filled.Add">
+                                        Add Grid
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Outlined"
+                                               Color="Color.Default"
+                                               OnClick="() => ResetBackpack(bpId)"
+                                               StartIcon="@Icons.Material.Filled.Restore">
+                                        Reset
+                                    </MudButton>
+                                </MudStack>
+                            </MudExpansionPanel>
+                        }
+                    }
+                </MudExpansionPanels>
+            </MudExpansionPanel>
+        }
+    </MudExpansionPanels>
+</MudContainer>
+
+@code {
+    private ModConfig Config => ConfigService.Config;
+
+    private void AddGrid(BackpackConfig config)
+    {
+        config.Grids.Add(new GridConfig { CellsH = 1, CellsV = 1 });
+    }
+
+    private async Task ConfirmRemoveGrid(BackpackConfig config, int index)
+    {
+        if (config.Grids.Count <= 1)
+        {
+            return;
+        }
+
+        var result = await DialogService.ShowMessageBox(
+            "Remove Grid",
+            $"Remove Grid {index + 1}?",
+            yesText: "Remove", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            config.Grids.RemoveAt(index);
+        }
+    }
+
+    private void ResetBackpack(string templateId)
+    {
+        if (!BackpackCatalog.All.TryGetValue(templateId, out var entry))
+        {
+            return;
+        }
+
+        Config.Backpacks[templateId] = new BackpackConfig
+        {
+            Grids = entry
+                .Defaults.Select(d => new GridConfig
+                {
+                    CellsH = d.CellsH,
+                    CellsV = d.CellsV,
+                    RemoveFilters = d.RemoveFilters,
+                })
+                .ToList(),
+        };
+    }
+}

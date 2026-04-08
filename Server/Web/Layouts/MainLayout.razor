@@ -1,0 +1,70 @@
+@using SPTarkov.Server.Web.Components.Layout
+@inherits BaseMudBlazorLayout
+@inject ConfigService ConfigService
+@inject BetterBackpacksPlugin Plugin
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<HeadContent>
+    <link href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" rel="stylesheet" />
+</HeadContent>
+
+<MudThemeProvider IsDarkMode="true" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudText Typo="Typo.h6">Better Backpacks</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Outlined" Color="Color.Warning"
+                   StartIcon="@Icons.Material.Filled.RestartAlt"
+                   OnClick="ResetAll"
+                   Class="mr-2">
+            Reset All
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Save"
+                   OnClick="SaveConfig">
+            Save
+        </MudButton>
+    </MudAppBar>
+    <MudMainContent Class="pa-4 mt-16">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+<script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
+
+@code {
+    private async Task SaveConfig()
+    {
+        try
+        {
+            await ConfigService.SaveAsync();
+            Plugin.ApplyConfig();
+            Snackbar.Add("Configuration saved and applied.", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to save: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task ResetAll()
+    {
+        var result = await DialogService.ShowMessageBox(
+            "Reset All",
+            "Reset all backpack configurations to their default values? Changes are not saved until you click Save.",
+            yesText: "Reset", cancelText: "Cancel");
+
+        if (result == true)
+        {
+            var defaults = ModConfig.CreateDefault();
+            ConfigService.Config.Enabled = defaults.Enabled;
+            ConfigService.Config.Backpacks = defaults.Backpacks;
+            Snackbar.Add("All values reset to defaults. Click Save to apply.", Severity.Info);
+        }
+    }
+}
