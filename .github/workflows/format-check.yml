@@ -17,13 +17,14 @@ jobs:
         with:
           dotnet-version: "9.0.x"
 
-      - name: Restore tools
-        run: |
-          dotnet tool restore --tool-manifest Client/dotnet-tools.json
-          dotnet tool restore --tool-manifest Server/dotnet-tools.json
-
       - name: Check Client formatting
-        run: dotnet csharpier --check Client/
+        working-directory: Client
+        run: |
+          dotnet tool restore
+          dotnet csharpier check .
 
       - name: Check Server formatting
-        run: dotnet csharpier --check Server/
+        working-directory: Server
+        run: |
+          dotnet tool restore
+          dotnet csharpier check .
