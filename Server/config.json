@@ -1,6 +1,6 @@
 {
   "debug": false,
-  "unconfiguredIncreasePercent": 25,
+  "customIncreasePercent": 25,
   "backpacks": {
     "5ab8f04f86f774585f4237d8": {
       "grids": [

@@ -12,30 +12,6 @@
                Class="mb-4" />
 
     <MudExpansionPanels MultiExpansion="true">
-        <MudExpansionPanel Text="Unconfigured Backpacks" Expanded="true">
-            <MudStack Spacing="1" Class="pa-2">
-                <MudText Typo="Typo.body2" Style="color: var(--mud-palette-text-secondary);">
-                    Backpacks not listed below (e.g. from other mods) will have their grids
-                    automatically increased by this percentage. Set to 0 to disable.
-                </MudText>
-                <div style="width: 200px;">
-                    <MudNumericField T="int"
-                                     Value="Config.UnconfiguredIncreasePercent"
-                                     ValueChanged="v => Config.UnconfiguredIncreasePercent = v"
-                                     Label="Increase %"
-                                     Min="0"
-                                     Max="200"
-                                     Immediate="true"
-                                     Variant="Variant.Outlined"
-                                     Adornment="Adornment.End"
-                                     AdornmentText="%"
-                                     Margin="Margin.Dense" />
-                </div>
-            </MudStack>
-        </MudExpansionPanel>
-    </MudExpansionPanels>
-
-    <MudExpansionPanels MultiExpansion="true" Class="mt-4">
         @foreach (var (tierKey, tierLabel) in BackpackCatalog.Tiers)
         {
             <MudExpansionPanel Text="@tierLabel">
@@ -117,6 +93,30 @@
                 </MudExpansionPanels>
             </MudExpansionPanel>
         }
+    </MudExpansionPanels>
+
+    <MudExpansionPanels MultiExpansion="true" Class="mt-4">
+        <MudExpansionPanel Text="Custom Backpacks" Expanded="true">
+            <MudStack Spacing="1" Class="pa-2">
+                <MudText Typo="Typo.body2" Style="color: var(--mud-palette-text-secondary);">
+                    Backpacks not listed above (e.g. from other mods) will have their grids
+                    automatically increased by this percentage. Set to 0 to disable.
+                </MudText>
+                <div style="width: 200px;">
+                    <MudNumericField T="int"
+                                     Value="Config.CustomIncreasePercent"
+                                     ValueChanged="v => Config.CustomIncreasePercent = v"
+                                     Label="Increase %"
+                                     Min="0"
+                                     Max="200"
+                                     Immediate="true"
+                                     Variant="Variant.Outlined"
+                                     Adornment="Adornment.End"
+                                     AdornmentText="%"
+                                     Margin="Margin.Dense" />
+                </div>
+            </MudStack>
+        </MudExpansionPanel>
     </MudExpansionPanels>
 </MudContainer>
 

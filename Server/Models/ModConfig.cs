@@ -5,7 +5,7 @@ namespace BetterBackpacks.Models;
 public class ModConfig
 {
     public bool Debug { get; set; }
-    public int UnconfiguredIncreasePercent { get; set; } = 25;
+    public int CustomIncreasePercent { get; set; } = 25;
     public Dictionary<string, BackpackConfig> Backpacks { get; set; } = new();
 
     private static readonly JsonSerializerOptions JsonOptions = new()

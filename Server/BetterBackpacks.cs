@@ -56,7 +56,7 @@ public class BetterBackpacksPlugin(
         var configuredCount = 0;
         var dynamicCount = 0;
         var config = configService.Config;
-        var increasePercent = config.UnconfiguredIncreasePercent;
+        var increasePercent = config.CustomIncreasePercent;
         var debug = config.Debug;
 
         foreach (var (id, item) in items)
