@@ -67,6 +67,9 @@ Copy-Item (Join-Path $ClientDir 'bin\Release\netstandard2.1\BetterBackpacks.dll'
 Copy-Item (Join-Path $ServerDir 'bin\Release\BetterBackpacks.dll') `
           (Join-Path $StagingDir 'SPT\user\mods\Refringe-BetterBackpacks\BetterBackpacks.dll')
 
+Copy-Item (Join-Path $ServerDir 'config.json') `
+          (Join-Path $StagingDir 'SPT\user\mods\Refringe-BetterBackpacks\config.json')
+
 # Create zip
 if (Test-Path $ZipPath) { Remove-Item $ZipPath -Force }
 Compress-Archive -Path (Join-Path $StagingDir 'BepInEx'), (Join-Path $StagingDir 'SPT') `

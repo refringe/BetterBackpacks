@@ -19,7 +19,7 @@ public record ModMetadata : AbstractModMetadata, IModWebMetadata
     public override string Name { get; init; } = "BetterBackpacks";
     public override string Author { get; init; } = "Refringe";
     public override List<string>? Contributors { get; init; } = ["Josh Mate"];
-    public override SemanticVersioning.Version Version { get; init; } = new("1.0.0");
+    public override SemanticVersioning.Version Version { get; init; } = new("1.0.1");
     public override SemanticVersioning.Range SptVersion { get; init; } = new("~4.0.0");
 
     public override List<string>? Incompatibilities { get; init; }
@@ -62,6 +62,12 @@ public class BetterBackpacksPlugin(
         foreach (var (id, item) in items)
         {
             if (!itemHelper.IsOfBaseclass(id, BaseClasses.BACKPACK))
+            {
+                continue;
+            }
+
+            // Skip the endless backpack (Terraplane) — it has a massive grid by design.
+            if (id.ToString() == ItemTpl.BACKPACK_MYSTERY_RANCH_TERRAPLANE)
             {
                 continue;
             }
