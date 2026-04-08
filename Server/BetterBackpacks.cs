@@ -212,11 +212,13 @@ public class BetterBackpacksPlugin(
         var currentCells = cellsH * cellsV;
         var targetCells = (int)Math.Ceiling(currentCells * (1.0 + increasePercent / 100.0));
 
-        var bestW = cellsH;
-        var bestV = cellsV;
-        var bestTotal = int.MaxValue;
+        // Start from the current width (capped at max) to avoid reducing columns.
+        var startWidth = Math.Min(cellsH, MaxGridWidth);
+        var bestW = startWidth;
+        var bestV = (int)Math.Ceiling((double)targetCells / startWidth);
+        var bestTotal = bestW * bestV;
 
-        for (var w = 1; w <= MaxGridWidth; w++)
+        for (var w = startWidth + 1; w <= MaxGridWidth; w++)
         {
             var h = (int)Math.Ceiling((double)targetCells / w);
             var total = w * h;
