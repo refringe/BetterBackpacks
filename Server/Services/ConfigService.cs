@@ -22,16 +22,12 @@ public class ConfigService(ISptLogger<ConfigService> logger, ModHelper modHelper
     {
         try
         {
-            var modPath = modHelper.GetAbsolutePathToModFolder(
-                Assembly.GetExecutingAssembly()
-            );
+            var modPath = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
             var configPath = Path.Combine(modPath, "config.json");
 
             if (!File.Exists(configPath))
             {
-                logger.Warning(
-                    "[BetterBackpacks] No config.json found, using defaults."
-                );
+                logger.Warning("[BetterBackpacks] No config.json found, using defaults.");
                 Config = ModConfig.CreateDefault();
                 return;
             }
@@ -50,9 +46,7 @@ public class ConfigService(ISptLogger<ConfigService> logger, ModHelper modHelper
     {
         try
         {
-            var modPath = modHelper.GetAbsolutePathToModFolder(
-                Assembly.GetExecutingAssembly()
-            );
+            var modPath = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
             var json = Config.ToJson();
             await File.WriteAllTextAsync(Path.Combine(modPath, "config.json"), json);
             logger.Success("[BetterBackpacks] Configuration saved via web UI.");

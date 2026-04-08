@@ -25,16 +25,8 @@ public static class BackpackCatalog
             "Tier 1",
             [new() { CellsH = 3, CellsV = 3 }]
         ),
-        [ItemTpl.BACKPACK_VKBO_ARMY_BAG] = new(
-            "VKBO Army Bag",
-            "Tier 1",
-            [new() { CellsH = 5, CellsV = 2 }]
-        ),
-        [ItemTpl.BACKPACK_TRANSFORMER_BAG] = new(
-            "Transformer Bag",
-            "Tier 1",
-            [new() { CellsH = 4, CellsV = 3 }]
-        ),
+        [ItemTpl.BACKPACK_VKBO_ARMY_BAG] = new("VKBO Army Bag", "Tier 1", [new() { CellsH = 5, CellsV = 2 }]),
+        [ItemTpl.BACKPACK_TRANSFORMER_BAG] = new("Transformer Bag", "Tier 1", [new() { CellsH = 4, CellsV = 3 }]),
         [ItemTpl.BACKPACK_FLYYE_MBSS_BACKPACK_UCP] = new(
             "Flyye MBSS (UCP)",
             "Tier 1",
@@ -82,11 +74,7 @@ public static class BackpackCatalog
         // =====================================================================
         // Tier 2 — Medium (Trader LL3, common flea), ~20-25% buff
         // =====================================================================
-        [ItemTpl.BACKPACK_DUFFLE_BAG] = new(
-            "Duffle Bag",
-            "Tier 2",
-            [new() { CellsH = 5, CellsV = 3 }]
-        ),
+        [ItemTpl.BACKPACK_DUFFLE_BAG] = new("Duffle Bag", "Tier 2", [new() { CellsH = 5, CellsV = 3 }]),
         [ItemTpl.BACKPACK_LOLKEK_3F_TRANSFER_TOURIST] = new(
             "LolKek 3F Transfer Tourist",
             "Tier 2",
@@ -102,11 +90,7 @@ public static class BackpackCatalog
             "Tier 2",
             [new() { CellsH = 5, CellsV = 5 }]
         ),
-        [ItemTpl.BACKPACK_SCAV] = new(
-            "Scav Backpack",
-            "Tier 2",
-            [new() { CellsH = 5, CellsV = 5 }]
-        ),
+        [ItemTpl.BACKPACK_SCAV] = new("Scav Backpack", "Tier 2", [new() { CellsH = 5, CellsV = 5 }]),
         [ItemTpl.BACKPACK_HAZARD_4_TAKEDOWN_SLING_BACKPACK_BLACK] = new(
             "Hazard 4 Takedown (Black)",
             "Tier 2",
@@ -170,11 +154,7 @@ public static class BackpackCatalog
         [ItemTpl.BACKPACK_DIRECT_ACTION_DRAGON_EGG_MARK_II_BACKPACK_BLACK] = new(
             "DA Dragon Egg Mk II (Black)",
             "Tier 2",
-            [
-                new() { CellsH = 2, CellsV = 2 },
-                new() { CellsH = 3, CellsV = 3 },
-                new() { CellsH = 5, CellsV = 4 },
-            ]
+            [new() { CellsH = 2, CellsV = 2 }, new() { CellsH = 3, CellsV = 3 }, new() { CellsH = 5, CellsV = 4 }]
         ),
         [ItemTpl.BACKPACK_MYSTERY_RANCH_TERRAFRAME_BACKPACK_OLIVE_DRAB] = new(
             "MR Terraframe (Olive Drab)",
@@ -226,29 +206,17 @@ public static class BackpackCatalog
         [ItemTpl.BACKPACK_EBERLESTOCK_G2_GUNSLINGER_II_BACKPACK_DRY_EARTH] = new(
             "G2 Gunslinger II (Dry Earth)",
             "Tier 3",
-            [
-                new() { CellsH = 4, CellsV = 5 },
-                new() { CellsH = 2, CellsV = 8 },
-                new() { CellsH = 3, CellsV = 3 },
-            ]
+            [new() { CellsH = 4, CellsV = 5 }, new() { CellsH = 2, CellsV = 8 }, new() { CellsH = 3, CellsV = 3 }]
         ),
         [ItemTpl.BACKPACK_MYSTERY_RANCH_SATL_BRIDGER_ASSAULT_PACK_FOLIAGE] = new(
             "MR SATL Bridger (Foliage)",
             "Tier 3",
-            [
-                new() { CellsH = 6, CellsV = 3 },
-                new() { CellsH = 4, CellsV = 4 },
-                new() { CellsH = 4, CellsV = 4 },
-            ]
+            [new() { CellsH = 6, CellsV = 3 }, new() { CellsH = 4, CellsV = 4 }, new() { CellsH = 4, CellsV = 4 }]
         ),
         [ItemTpl.BACKPACK_EBERLESTOCK_F4_TERMINATOR_LOAD_BEARING_BACKPACK_TIGER_STRIPE] = new(
             "F4 Terminator (Tiger Stripe)",
             "Tier 3",
-            [
-                new() { CellsH = 6, CellsV = 4 },
-                new() { CellsH = 5, CellsV = 3 },
-                new() { CellsH = 5, CellsV = 3 },
-            ]
+            [new() { CellsH = 6, CellsV = 4 }, new() { CellsH = 5, CellsV = 3 }, new() { CellsH = 5, CellsV = 3 }]
         ),
 
         // =====================================================================
@@ -258,8 +226,18 @@ public static class BackpackCatalog
             "NICE COMM 3 BVS (Coyote)",
             "Tier 4",
             [
-                new() { CellsH = 2, CellsV = 7, RemoveFilters = true },
-                new() { CellsH = 2, CellsV = 7, RemoveFilters = true },
+                new()
+                {
+                    CellsH = 2,
+                    CellsV = 7,
+                    RemoveFilters = true,
+                },
+                new()
+                {
+                    CellsH = 2,
+                    CellsV = 7,
+                    RemoveFilters = true,
+                },
             ]
         ),
         [ItemTpl.BACKPACK_TASMANIAN_TIGER_TROOPER_35_BACKPACK_KHAKI] = new(
@@ -272,16 +250,8 @@ public static class BackpackCatalog
             "Tier 4",
             [new() { CellsH = 6, CellsV = 9 }]
         ),
-        [ItemTpl.BACKPACK_SANTAS_BAG] = new(
-            "Santa's Bag",
-            "Tier 4",
-            [new() { CellsH = 6, CellsV = 9 }]
-        ),
-        [ItemTpl.BACKPACK_PILGRIM_TOURIST] = new(
-            "Pilgrim Tourist",
-            "Tier 4",
-            [new() { CellsH = 6, CellsV = 9 }]
-        ),
+        [ItemTpl.BACKPACK_SANTAS_BAG] = new("Santa's Bag", "Tier 4", [new() { CellsH = 6, CellsV = 9 }]),
+        [ItemTpl.BACKPACK_PILGRIM_TOURIST] = new("Pilgrim Tourist", "Tier 4", [new() { CellsH = 6, CellsV = 9 }]),
         [ItemTpl.BACKPACK_MYSTERY_RANCH_BLACKJACK_50_BACKPACK_MULTICAM] = new(
             "Blackjack 50 (MultiCam)",
             "Tier 4",
@@ -309,7 +279,14 @@ public static class BackpackCatalog
         [ItemTpl.BACKPACK_LBT2670_SLIM_FIELD_MED_PACK_BLACK] = new(
             "LBT-2670 Med Pack (Black)",
             "Special",
-            [new() { CellsH = 6, CellsV = 8, RemoveFilters = true }]
+            [
+                new()
+                {
+                    CellsH = 6,
+                    CellsV = 8,
+                    RemoveFilters = true,
+                },
+            ]
         ),
     };
 }

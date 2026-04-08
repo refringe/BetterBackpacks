@@ -48,16 +48,14 @@ public class BetterBackpacksPlugin(
         return Task.CompletedTask;
     }
 
+    private const int MaxGridWidth = 6;
+
     public void ApplyConfig()
     {
-        if (!configService.Config.Enabled)
-        {
-            logger.Info("[BetterBackpacks] Mod is disabled via configuration.");
-            return;
-        }
-
         var items = databaseService.GetItems();
-        var count = 0;
+        var configuredCount = 0;
+        var dynamicCount = 0;
+        var increasePercent = configService.Config.UnconfiguredIncreasePercent;
 
         foreach (var (id, item) in items)
         {
@@ -66,86 +64,150 @@ public class BetterBackpacksPlugin(
                 continue;
             }
 
-            if (
-                !configService.Config.Backpacks.TryGetValue(
-                    id.ToString(),
-                    out var backpackConfig
-                )
-            )
-            {
-                continue;
-            }
-
-            var gridConfigs = backpackConfig.Grids;
-
-            if (gridConfigs.Count == 0)
-            {
-                continue;
-            }
-
             if (item.Properties?.Grids == null || !item.Properties.Grids.Any())
             {
-                logger.Warning($"[BetterBackpacks] {item.Name}: no grids found. Skipping.");
                 continue;
             }
 
-            var grids = item.Properties.Grids.ToList();
+            var templateId = id.ToString();
 
-            // Add grids when config specifies more than vanilla (grid-split bags).
-            if (grids.Count < gridConfigs.Count)
+            if (configService.Config.Backpacks.TryGetValue(templateId, out var backpackConfig))
             {
-                var template = grids[0];
-                while (grids.Count < gridConfigs.Count)
+                if (ApplyConfiguredBackpack(id, item, backpackConfig))
                 {
-                    grids.Add(
-                        new Grid
-                        {
-                            Name = $"grid_{grids.Count}",
-                            Id = $"{id}_grid_{grids.Count}",
-                            Parent = template.Parent,
-                            Prototype = template.Prototype,
-                            Properties = new GridProperties
-                            {
-                                CellsH = 1,
-                                CellsV = 1,
-                                Filters = [],
-                                MinCount = template.Properties?.MinCount,
-                                MaxCount = template.Properties?.MaxCount,
-                                MaxWeight = template.Properties?.MaxWeight,
-                                IsSortingTable = template.Properties?.IsSortingTable,
-                            },
-                        }
-                    );
-                }
-
-                item.Properties.Grids = grids;
-            }
-            else if (grids.Count > gridConfigs.Count)
-            {
-                grids = grids.Take(gridConfigs.Count).ToList();
-                item.Properties.Grids = grids;
-            }
-
-            for (var i = 0; i < grids.Count; i++)
-            {
-                var props = grids[i].Properties;
-                if (props == null)
-                {
-                    continue;
-                }
-
-                props.CellsH = gridConfigs[i].CellsH;
-                props.CellsV = gridConfigs[i].CellsV;
-
-                if (gridConfigs[i].RemoveFilters)
-                {
-                    props.Filters = [];
+                    configuredCount++;
                 }
             }
-
-            count++;
+            else if (increasePercent > 0)
+            {
+                if (ApplyDynamicIncrease(item, increasePercent))
+                {
+                    dynamicCount++;
+                }
+            }
         }
 
-        logger.Success($"[BetterBackpacks] Modified {count} backpacks.");
+        logger.Success($"[BetterBackpacks] Modified {configuredCount} configured + {dynamicCount} dynamic backpacks.");
+    }
+
+    private bool ApplyConfiguredBackpack(object id, TemplateItem item, BackpackConfig backpackConfig)
+    {
+        var gridConfigs = backpackConfig.Grids;
+
+        if (gridConfigs.Count == 0)
+        {
+            return false;
+        }
+
+        var grids = item.Properties!.Grids!.ToList();
+
+        // Add grids when config specifies more than vanilla (grid-split bags).
+        if (grids.Count < gridConfigs.Count)
+        {
+            var template = grids[0];
+            while (grids.Count < gridConfigs.Count)
+            {
+                grids.Add(
+                    new Grid
+                    {
+                        Name = $"grid_{grids.Count}",
+                        Id = $"{id}_grid_{grids.Count}",
+                        Parent = template.Parent,
+                        Prototype = template.Prototype,
+                        Properties = new GridProperties
+                        {
+                            CellsH = 1,
+                            CellsV = 1,
+                            Filters = [],
+                            MinCount = template.Properties?.MinCount,
+                            MaxCount = template.Properties?.MaxCount,
+                            MaxWeight = template.Properties?.MaxWeight,
+                            IsSortingTable = template.Properties?.IsSortingTable,
+                        },
+                    }
+                );
+            }
+
+            item.Properties.Grids = grids;
+        }
+        else if (grids.Count > gridConfigs.Count)
+        {
+            grids = grids.Take(gridConfigs.Count).ToList();
+            item.Properties.Grids = grids;
+        }
+
+        for (var i = 0; i < grids.Count; i++)
+        {
+            var props = grids[i].Properties;
+            if (props == null)
+            {
+                continue;
+            }
+
+            props.CellsH = gridConfigs[i].CellsH;
+            props.CellsV = gridConfigs[i].CellsV;
+
+            if (gridConfigs[i].RemoveFilters)
+            {
+                props.Filters = [];
+            }
+        }
+
+        return true;
+    }
+
+    private static bool ApplyDynamicIncrease(TemplateItem item, int increasePercent)
+    {
+        var modified = false;
+
+        foreach (var grid in item.Properties!.Grids!)
+        {
+            var props = grid.Properties;
+            if (props?.CellsH == null || props.CellsV == null)
+            {
+                continue;
+            }
+
+            var (newH, newV) = CalculateIncreasedGrid(props.CellsH.Value, props.CellsV.Value, increasePercent);
+
+            if (newH != props.CellsH || newV != props.CellsV)
+            {
+                props.CellsH = newH;
+                props.CellsV = newV;
+                modified = true;
+            }
+        }
+
+        return modified;
+    }
+
+    /// <summary>
+    /// Calculates new grid dimensions that increase total cells by at least the given
+    /// percentage while keeping the width at or below <see cref="MaxGridWidth"/>.
+    /// Picks the smallest total that meets the target across all valid widths.
+    /// </summary>
+    private static (int CellsH, int CellsV) CalculateIncreasedGrid(int cellsH, int cellsV, int increasePercent)
+    {
+        var currentCells = cellsH * cellsV;
+        var targetCells = (int)Math.Ceiling(currentCells * (1.0 + increasePercent / 100.0));
+
+        var bestW = cellsH;
+        var bestV = cellsV;
+        var bestTotal = int.MaxValue;
+
+        for (var w = 1; w <= MaxGridWidth; w++)
+        {
+            var h = (int)Math.Ceiling((double)targetCells / w);
+            var total = w * h;
+
+            if (total >= targetCells && total < bestTotal)
+            {
+                bestW = w;
+                bestV = h;
+                bestTotal = total;
+            }
+        }
+
+        return (bestW, bestV);
     }
 }

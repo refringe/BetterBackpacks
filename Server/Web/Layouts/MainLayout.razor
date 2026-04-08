@@ -44,7 +44,7 @@
         {
             await ConfigService.SaveAsync();
             Plugin.ApplyConfig();
-            Snackbar.Add("Configuration saved and applied.", Severity.Success);
+            Snackbar.Add("Configuration saved. Restart the server and reconnect clients for changes to take effect.", Severity.Success);
         }
         catch (Exception ex)
         {
@@ -62,7 +62,7 @@
         if (result == true)
         {
             var defaults = ModConfig.CreateDefault();
-            ConfigService.Config.Enabled = defaults.Enabled;
+            ConfigService.Config.UnconfiguredIncreasePercent = defaults.UnconfiguredIncreasePercent;
             ConfigService.Config.Backpacks = defaults.Backpacks;
             Snackbar.Add("All values reset to defaults. Click Save to apply.", Severity.Info);
         }

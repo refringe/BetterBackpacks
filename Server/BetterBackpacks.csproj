@@ -53,7 +53,11 @@
       <WebAssets Include="wwwroot\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(StagingPath)wwwroot\%(RecursiveDir)" />
-    <ZipDirectory SourceDirectory="$(ZipOutputPath)_zip" DestinationFile="$(ZipOutputPath)$(ModFolder).zip" Overwrite="true" />
+    <ZipDirectory
+      SourceDirectory="$(ZipOutputPath)_zip"
+      DestinationFile="$(ZipOutputPath)$(ModFolder).zip"
+      Overwrite="true"
+    />
     <RemoveDir Directories="$(ZipOutputPath)_zip" />
   </Target>
 </Project>
